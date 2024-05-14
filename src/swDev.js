@@ -1,7 +1,8 @@
 /* eslint-disable no-useless-escape */
 export default function swDev() {
   function determineAppServerKey() {
-    const vapidPublicKey = process.env.REACT_APP_PUBLIC_VAPID_KEY;
+    const vapidPublicKey =
+      "BJthRQ5myDgc7OSXzPCMftGw-n16F7zQBEN7EUD6XxcfTTvrLGWSIG7y_JxiWtVlCFua0S8MTB5rPziBqNx1qIo";
     return urlBase64ToUint8Array(vapidPublicKey);
   }
 
@@ -23,7 +24,7 @@ export default function swDev() {
   let swUrl = `${process.env.PUBLIC_URL}/serviceWorker.js`;
   navigator.serviceWorker.register(swUrl).then((response) => {
     console.warn("response", response);
-    return response.pushManager.getSubscription().then(() => {
+    return response.pushManager.getSubscription().then(function (subscription) {
       response.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: determineAppServerKey(),
