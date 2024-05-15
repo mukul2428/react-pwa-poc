@@ -10,9 +10,32 @@ import About from "./pages/About";
 import Home from "./pages/Home";
 import CaptureDocuments from "./pages/CaptureDocuments";
 import RandomImages from "./pages/RandomImages";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    // Check if notifications are allowed
+    if (Notification.permission === "default") {
+      setShowPopup(true);
+    }
+  }, []);
+
+  const handlePermissionRequest = (permission) => {
+    Notification.requestPermission().then((result) => {
+      if (result === "granted") {
+        // Notifications allowed, do nothing
+        setShowPopup(false);
+      } else if (result === "denied") {
+        // Notifications blocked
+        alert("Notifications blocked.");
+        setShowPopup(false);
+      }
+    });
+  };
 
   useEffect(() => {
     // generateToken();
@@ -39,7 +62,7 @@ function App() {
   const handleInstallClick = () => {
     // Check if the app is running in standalone mode (as a PWA)
     const isStandalone = window.navigator.standalone;
-  
+
     // Only prompt installation if not in standalone mode
     if (!isStandalone && deferredPrompt) {
       deferredPrompt.prompt();
@@ -53,7 +76,6 @@ function App() {
       });
     }
   };
-  
 
   return (
     <>
@@ -102,6 +124,28 @@ function App() {
         <Route path="/about" element={<About />} />
       </Routes>
       {/* <Toaster /> */}
+      <Modal show={showPopup} onHide={() => setShowPopup(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notification Permission</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>We'd like to send you notifications. Is that okay?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => handlePermissionRequest("denied")}
+          >
+            Block
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => handlePermissionRequest("granted")}
+          >
+            Allow
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
