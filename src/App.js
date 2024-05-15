@@ -37,7 +37,11 @@ function App() {
   }, []);
 
   const handleInstallClick = () => {
-    if (deferredPrompt) {
+    // Check if the app is running in standalone mode (as a PWA)
+    const isStandalone = window.navigator.standalone;
+  
+    // Only prompt installation if not in standalone mode
+    if (!isStandalone && deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
@@ -49,6 +53,7 @@ function App() {
       });
     }
   };
+  
 
   return (
     <>
