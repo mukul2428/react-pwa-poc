@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 
 const Home = () => {
-  const [pokemonData, setPokemonData] = useState([]);
-  const [newPokemon, setNewPokemon] = useState({
-    name: "",
-    type: "",
-    level: "",
-    ability: "",
-    weight: "",
-    height: "",
+  const [insuranceData, setInsuranceData] = useState([]);
+  const [newInsurance, setNewInsurance] = useState({
+    policyHolderName: "",
+    policyType: "",
+    coverageAmount: "",
+    beneficiary: "",
+    premiumAmount: "",
+    policyDuration: "",
   });
 
   useEffect(() => {
     // Load data from cache when component mounts
     if ("caches" in window) {
-      caches.open("pokemonData").then((cache) => {
-        cache.match("pokemonData").then((response) => {
+      caches.open("insuranceData").then((cache) => {
+        cache.match("insuranceData").then((response) => {
           if (response) {
             response.json().then((data) => {
-              setPokemonData(data);
+              setInsuranceData(data);
             });
           }
         });
@@ -28,28 +28,28 @@ const Home = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewPokemon({ ...newPokemon, [name]: value });
+    setNewInsurance({ ...newInsurance, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedPokemonData = [...pokemonData, newPokemon];
-    setPokemonData(updatedPokemonData);
-    setNewPokemon({
-      name: "",
-      type: "",
-      level: "",
-      ability: "",
-      weight: "",
-      height: "",
+    const updatedInsuranceData = [...insuranceData, newInsurance];
+    setInsuranceData(updatedInsuranceData);
+    setNewInsurance({
+      policyHolderName: "",
+      policyType: "",
+      coverageAmount: "",
+      beneficiary: "",
+      premiumAmount: "",
+      policyDuration: "",
     });
 
     // Update cache with new data
     if ("caches" in window) {
-      caches.open("pokemonData").then((cache) => {
+      caches.open("insuranceData").then((cache) => {
         cache.put(
-          "pokemonData",
-          new Response(JSON.stringify(updatedPokemonData))
+          "insuranceData",
+          new Response(JSON.stringify(updatedInsuranceData))
         );
       });
     }
@@ -60,88 +60,88 @@ const Home = () => {
       className="container"
       style={{ maxWidth: "600px", margin: "0 auto", marginTop: "50px" }}
     >
-      <h3 className="text-center mt-3">Pokemon Form</h3>
+      <h3 className="text-center mt-3">Insurance Form</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="name" className="form-label">
-            Name:
+          <label htmlFor="policyHolderName" className="form-label">
+            Policy Holder Name:
           </label>
           <input
             type="text"
-            id="name"
-            name="name"
+            id="policyHolderName"
+            name="policyHolderName"
             className="form-control"
-            value={newPokemon.name}
+            value={newInsurance.policyHolderName}
             onChange={handleChange}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="type" className="form-label">
-            Type:
+          <label htmlFor="policyType" className="form-label">
+            Policy Type:
           </label>
           <input
             type="text"
-            id="type"
-            name="type"
+            id="policyType"
+            name="policyType"
             className="form-control"
-            value={newPokemon.type}
+            value={newInsurance.policyType}
             onChange={handleChange}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="level" className="form-label">
-            Level:
+          <label htmlFor="coverageAmount" className="form-label">
+            Coverage Amount:
           </label>
           <input
-            type="number"
-            id="level"
-            name="level"
+            type="text"
+            id="coverageAmount"
+            name="coverageAmount"
             className="form-control"
-            value={newPokemon.level}
+            value={newInsurance.coverageAmount}
             onChange={handleChange}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="ability" className="form-label">
-            Ability:
+          <label htmlFor="beneficiary" className="form-label">
+            Beneficiary:
           </label>
           <input
             type="text"
-            id="ability"
-            name="ability"
+            id="beneficiary"
+            name="beneficiary"
             className="form-control"
-            value={newPokemon.ability}
+            value={newInsurance.beneficiary}
             onChange={handleChange}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="weight" className="form-label">
-            Weight:
+          <label htmlFor="premiumAmount" className="form-label">
+            Premium Amount:
           </label>
           <input
             type="text"
-            id="weight"
-            name="weight"
+            id="premiumAmount"
+            name="premiumAmount"
             className="form-control"
-            value={newPokemon.weight}
+            value={newInsurance.premiumAmount}
             onChange={handleChange}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="height" className="form-label">
-            Height:
+          <label htmlFor="policyDuration" className="form-label">
+            Policy Duration:
           </label>
           <input
             type="text"
-            id="height"
-            name="height"
+            id="policyDuration"
+            name="policyDuration"
             className="form-control"
-            value={newPokemon.height}
+            value={newInsurance.policyDuration}
             onChange={handleChange}
             required
           />
@@ -150,29 +150,29 @@ const Home = () => {
           Submit
         </button>
       </form>
-      {pokemonData.length > 0 && (
+      {insuranceData.length > 0 && (
         <div className="submitted-data mt-4">
-          <h3>Submitted Data:</h3>
+          <h3>Submitted Insurance Data:</h3>
           <table className="table table-striped">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Level</th>
-                <th>Ability</th>
-                <th>Weight</th>
-                <th>Height</th>
+                <th>Policy Holder Name</th>
+                <th>Policy Type</th>
+                <th>Coverage Amount</th>
+                <th>Beneficiary</th>
+                <th>Premium Amount</th>
+                <th>Policy Duration</th>
               </tr>
             </thead>
             <tbody>
-              {pokemonData.map((pokemon, index) => (
+              {insuranceData.map((insurance, index) => (
                 <tr key={index}>
-                  <td>{pokemon.name}</td>
-                  <td>{pokemon.type}</td>
-                  <td>{pokemon.level}</td>
-                  <td>{pokemon.ability}</td>
-                  <td>{pokemon.weight}</td>
-                  <td>{pokemon.height}</td>
+                  <td>{insurance.policyHolderName}</td>
+                  <td>{insurance.policyType}</td>
+                  <td>{insurance.coverageAmount}</td>
+                  <td>{insurance.beneficiary}</td>
+                  <td>{insurance.premiumAmount}</td>
+                  <td>{insurance.policyDuration}</td>
                 </tr>
               ))}
             </tbody>

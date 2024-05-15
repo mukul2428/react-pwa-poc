@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { getAllPokemonList } from "../api/pokemon";
+import { getAllImagesList } from "../api/randomImages";
 
-const Pokemon = () => {
-  const [pokemonData, setPokemonData] = useState([]);
+const RandomImages = () => {
+  const [imagesData, setimagesData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getAllPokemonList();
-      setPokemonData(data?.results);
+      const data = await getAllImagesList();
+      console.log(data);
+      setimagesData(data);
     }
     fetchData();
   }, []);
@@ -22,7 +23,7 @@ const Pokemon = () => {
         margin: "auto",
       }}
     >
-      {pokemonData?.map((poke, i) => {
+      {imagesData?.map((image, i) => {
         return (
           <div
             key={i}
@@ -35,14 +36,13 @@ const Pokemon = () => {
           >
             <div style={{ padding: "5px 10px" }}>
               <p style={{ fontWeight: "bold", textTransform: "capitalize" }}>
-                {" "}
-                {poke.name}
+                {image.author}
               </p>
             </div>
             <img
               style={{ height: "300px", width: "300px" }}
               alt="pokemon"
-              src={`https://img.pokemondb.net/artwork/large/${poke.name}.jpg`}
+              src={image.download_url}
             />
           </div>
         );
@@ -51,4 +51,4 @@ const Pokemon = () => {
   );
 };
 
-export default Pokemon;
+export default RandomImages;

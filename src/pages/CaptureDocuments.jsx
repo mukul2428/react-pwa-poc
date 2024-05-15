@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import "../App.css";
 
-function CapturePokemon() {
+function CaptureDocuments() {
   const webcamRef = useRef(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [facingMode, setFacingMode] = useState("environment"); // 'environment' for back camera, 'user' for front camera
@@ -114,4 +114,4 @@ function CapturePokemon() {
   );
 }
 
-export default CapturePokemon;
+export default CaptureDocuments;
