@@ -2,7 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import swDev from "../swDev";
 
-const Notification = () => {
+const SendNoti = () => {
   const urlBase64ToUint8Array = (base64String) => {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
@@ -20,30 +20,30 @@ const Notification = () => {
   };
 
   const handleSendNotification = async () => {
-    // try {
-    //   const registration = await swDev();
-    //   const subscription = await registration.pushManager.subscribe({
-    //     userVisibleOnly: true,
-    //     applicationServerKey: urlBase64ToUint8Array(
-    //       process.env.REACT_APP_VAPID_PRIVATE_KEY
-    //     ),
-    //   });
-    //   console.log("Push Registered...");
+    try {
+      const registration = await swDev();
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          process.env.REACT_APP_VAPID_PRIVATE_KEY
+        ),
+      });
+      console.log("Push Registered...");
 
-    //   // Send Push Notification
-    //   await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
-    //     method: "POST",
-    //     body: JSON.stringify(subscription),
-    //     headers: {
-    //       "content-type": "application/json",
-    //     },
-    //   });
-    // } catch (error) {
-    //   console.error(
-    //     "Error registering service worker or subscribing to push:",
-    //     error
-    //   );
-    // }
+      // Send Push Notification
+      await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
+        method: "POST",
+        body: JSON.stringify(subscription),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Error registering service worker or subscribing to push:",
+        error
+      );
+    }
   };
 
   return (
@@ -55,4 +55,4 @@ const Notification = () => {
   );
 };
 
-export default Notification;
+export default SendNoti;

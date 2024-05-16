@@ -8,7 +8,7 @@ import CaptureDocuments from "./pages/CaptureDocuments";
 import RandomImages from "./pages/RandomImages";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Notification from "./pages/Notification";
+import SendNoti from "./pages/SendNoti";
 
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -123,7 +123,7 @@ function App() {
         <Route exact path="/" element={<Home />} />
         <Route exact path="/captureDocuments" element={<CaptureDocuments />} />
         <Route path="/randomImages" element={<RandomImages />} />
-        <Route path="/notification" element={<Notification />} />
+        <Route path="/notification" element={<SendNoti />} />
       </Routes>
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>
         <Modal.Header closeButton>
