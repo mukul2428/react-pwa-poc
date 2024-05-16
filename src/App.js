@@ -4,9 +4,6 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link, Routes, Route } from "react-router-dom";
 import About from "./pages/About";
-// import { generateToken, messaging } from "./firebase";
-// import { onMessage } from "firebase/messaging";
-// import toast, { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import CaptureDocuments from "./pages/CaptureDocuments";
 import RandomImages from "./pages/RandomImages";
@@ -19,7 +16,7 @@ function App() {
 
   useEffect(() => {
     // Check if notifications are allowed
-    if (Notification.permission === "default") {
+    if (!window.navigator.standalone && Notification.permission === "default") {
       setShowPopup(true);
     }
   }, []);
@@ -38,12 +35,6 @@ function App() {
   };
 
   useEffect(() => {
-    // generateToken();
-    // onMessage(messaging, (payload) => {
-    //   console.log(payload);
-    //   toast(payload.notification.body);
-    // });
-
     const handleBeforeInstallPrompt = (event) => {
       event.preventDefault();
       setDeferredPrompt(event);
@@ -60,11 +51,7 @@ function App() {
   }, []);
 
   const handleInstallClick = () => {
-    // Check if the app is running in standalone mode (as a PWA)
-    const isStandalone = window.navigator.standalone;
-
-    // Only prompt installation if not in standalone mode
-    if (!isStandalone && deferredPrompt) {
+    if (!window.navigator.standalone && deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
@@ -123,7 +110,6 @@ function App() {
         <Route path="/randomImages" element={<RandomImages />} />
         <Route path="/about" element={<About />} />
       </Routes>
-      {/* <Toaster /> */}
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Notification Permission</Modal.Title>
