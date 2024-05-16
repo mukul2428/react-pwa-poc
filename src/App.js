@@ -19,9 +19,19 @@ function App() {
     if (Notification.permission === "default" && !isRunningAsPWA()) {
       setShowPopup(true);
     }
+    if (isRunningAsPWA()) {
+      Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+          // Notifications allowed
+        } else if (result === "denied") {
+          // Notifications blocked
+        }
+        setShowPopup(false);
+      });
+    }
   }, []);
 
-  const handlePermissionRequest = (permission) => {
+  const handlePermissionRequest = () => {
     Notification.requestPermission().then((result) => {
       if (result === "granted") {
         // Notifications allowed, do nothing
@@ -88,23 +98,24 @@ function App() {
                 About
               </Nav.Link>
             </Nav>
-            {/* Button to trigger installation */}
-            <button
-              onClick={handleInstallClick}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                textDecoration: "none",
-                transition: "background-color 0.3s ease",
-                marginRight: "15px",
-              }}
-            >
-              Install App
-            </button>
+            {!isRunningAsPWA() && (
+              <button
+                onClick={handleInstallClick}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  transition: "background-color 0.3s ease",
+                  marginRight: "15px",
+                }}
+              >
+                Install App
+              </button>
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>
