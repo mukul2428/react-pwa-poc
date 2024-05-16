@@ -22,7 +22,6 @@ const Notification = () => {
   const handleSendNotification = async () => {
     try {
       const registration = await swDev();
-      console.log(process.env.REACT_APP_VAPID_PRIVATE_KEY);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
@@ -32,7 +31,6 @@ const Notification = () => {
       console.log("Push Registered...");
 
       // Send Push Notification
-      console.log(subscription, 'body');
       await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
         method: "POST",
         body: JSON.stringify(subscription),
