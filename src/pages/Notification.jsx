@@ -20,30 +20,30 @@ const Notification = () => {
   };
 
   const handleSendNotification = async () => {
-    try {
-      const registration = await swDev();
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          'BFWCMiao-muL2to_SGKzfNoUDRI0cZYNwD9kP1yn3j1rwRG5u-qtrP0OSb6NXCEkbmk8NNY0V5cglYeg8P1f3jo'
-        ),
-      });
-      console.log("Push Registered...");
+    // try {
+    //   const registration = await swDev();
+    //   const subscription = await registration.pushManager.subscribe({
+    //     userVisibleOnly: true,
+    //     applicationServerKey: urlBase64ToUint8Array(
+    //       process.env.REACT_APP_VAPID_PRIVATE_KEY
+    //     ),
+    //   });
+    //   console.log("Push Registered...");
 
-      // Send Push Notification
-      await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
-        method: "POST",
-        body: JSON.stringify(subscription),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
-    } catch (error) {
-      console.error(
-        "Error registering service worker or subscribing to push:",
-        error
-      );
-    }
+    //   // Send Push Notification
+    //   await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
+    //     method: "POST",
+    //     body: JSON.stringify(subscription),
+    //     headers: {
+    //       "content-type": "application/json",
+    //     },
+    //   });
+    // } catch (error) {
+    //   console.error(
+    //     "Error registering service worker or subscribing to push:",
+    //     error
+    //   );
+    // }
   };
 
   return (
