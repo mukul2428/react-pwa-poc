@@ -22,6 +22,7 @@ const Notification = () => {
   const handleSendNotification = async () => {
     try {
       const registration = await swDev();
+      console.log(process.env.REACT_APP_VAPID_PRIVATE_KEY);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
