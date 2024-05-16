@@ -16,7 +16,7 @@ function App() {
 
   useEffect(() => {
     // Check if notifications are allowed
-    if (!window.navigator.standalone && Notification.permission === "default") {
+    if (Notification.permission === "default" && !isRunningAsPWA()) {
       setShowPopup(true);
     }
   }, []);
@@ -51,7 +51,7 @@ function App() {
   }, []);
 
   const handleInstallClick = () => {
-    if (!window.navigator.standalone && deferredPrompt) {
+    if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
@@ -62,6 +62,10 @@ function App() {
         setDeferredPrompt(null);
       });
     }
+  };
+
+  const isRunningAsPWA = () => {
+    return !window.matchMedia("(display-mode: browser)").matches;
   };
 
   return (
