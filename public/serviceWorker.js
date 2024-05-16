@@ -9,6 +9,7 @@ const cacheName = [
   "/",
   "/pokemon",
 ];
+
 this.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(cacheData).then((cache) => {
@@ -16,6 +17,15 @@ this.addEventListener("install", (event) => {
     })
   );
 });
+
+this.addEventListener("push", (e) => {
+  const data = e.data.json();
+  this.registration.showNotification(data.title, {
+    body: "Knock Knock",
+  });
+});
+
+
 let notificationSent = false;
 this.addEventListener("fetch", (event) => {
   if (!navigator.onLine && notificationSent === false) {

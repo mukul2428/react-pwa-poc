@@ -3,12 +3,12 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link, Routes, Route } from "react-router-dom";
-import About from "./pages/About";
 import Home from "./pages/Home";
 import CaptureDocuments from "./pages/CaptureDocuments";
 import RandomImages from "./pages/RandomImages";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Notification from "./pages/Notification";
 
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -94,8 +94,8 @@ function App() {
               <Nav.Link as={Link} to="/randomImages">
                 Random Images
               </Nav.Link>
-              <Nav.Link as={Link} to="/about">
-                About
+              <Nav.Link as={Link} to="/notification">
+                Notification
               </Nav.Link>
             </Nav>
             {!isRunningAsPWA() && (
@@ -123,7 +123,7 @@ function App() {
         <Route exact path="/" element={<Home />} />
         <Route exact path="/captureDocuments" element={<CaptureDocuments />} />
         <Route path="/randomImages" element={<RandomImages />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/notification" element={<Notification />} />
       </Routes>
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>
         <Modal.Header closeButton>
