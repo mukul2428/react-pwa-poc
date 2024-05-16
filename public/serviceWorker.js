@@ -20,19 +20,31 @@ this.addEventListener("install", (event) => {
 
 this.addEventListener("push", (e) => {
   const data = e.data.json();
+  console.log(data);
   this.registration.showNotification(data.title, {
-    body: "Knock Knock",
+    body: data.body,
+    vibrate: [100, 50, 100],
+    data: { primaryKey: 1 },
+    actions: [
+      { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+      { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+    ],
   });
 });
-
 
 let notificationSent = false;
 this.addEventListener("fetch", (event) => {
   if (!navigator.onLine && notificationSent === false) {
     notificationSent = true;
     event.waitUntil(
-      this.registration.showNotification("Internet", {
-        body: "internet not working",
+      this.registration.showNotification("Oops! Something Wrong", {
+        body: "Internet Is Not working",
+        vibrate: [100, 50, 100],
+        data: { primaryKey: 1 },
+        actions: [
+          { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+          { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+        ],
       })
     );
   }

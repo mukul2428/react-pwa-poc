@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import swDev from "../swDev";
 
 const SendNoti = () => {
+  const [loading, setLoading] = useState(false);
+
   const urlBase64ToUint8Array = (base64String) => {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
@@ -20,6 +22,7 @@ const SendNoti = () => {
   };
 
   const handleSendNotification = async () => {
+    setLoading(true);
     try {
       const registration = await swDev();
       const subscription = await registration.pushManager.subscribe({
@@ -33,23 +36,37 @@ const SendNoti = () => {
       // Send Push Notification
       await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
         method: "POST",
-        body: JSON.stringify(subscription),
+        body: JSON.stringify({
+          subscriptionData: subscription,
+          message: {
+            title: "Hi! You Called Me",
+            body: "Do You Want Any Help?",
+          },
+        }),
         headers: {
           "content-type": "application/json",
         },
       });
+      console.log("Notification sent successfully.");
+      setLoading(false);
     } catch (error) {
       console.error(
         "Error registering service worker or subscribing to push:",
         error
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="d-flex justify-content-center mt-4">
-      <Button variant="primary" onClick={handleSendNotification}>
-        Send Notification
+      <Button
+        variant="primary"
+        onClick={handleSendNotification}
+        disabled={loading}
+      >
+        {loading ? "Sending Notification..." : "Send Notification"}
       </Button>
     </div>
   );
