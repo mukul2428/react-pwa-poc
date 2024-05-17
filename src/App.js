@@ -5,10 +5,10 @@ import Navbar from "react-bootstrap/Navbar";
 import { Link, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CaptureDocuments from "./pages/CaptureDocuments";
-import RandomImages from "./pages/RandomImages";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import SendNoti from "./pages/SendNoti";
+import GeneratedPolicies from "./pages/GeneratedPolicies";
 
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -91,8 +91,8 @@ function App() {
               <Nav.Link as={Link} to="/captureDocuments">
                 Capture Documents
               </Nav.Link>
-              <Nav.Link as={Link} to="/randomImages">
-                Random Images
+              <Nav.Link as={Link} to="/generatedPolicies">
+               Generated Policies
               </Nav.Link>
               <Nav.Link as={Link} to="/notification">
                 Notification
@@ -122,7 +122,7 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/captureDocuments" element={<CaptureDocuments />} />
-        <Route path="/randomImages" element={<RandomImages />} />
+        <Route path="/generatedPolicies" element={<GeneratedPolicies />} />
         <Route path="/notification" element={<SendNoti />} />
       </Routes>
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>

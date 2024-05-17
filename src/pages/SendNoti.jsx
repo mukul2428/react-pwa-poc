@@ -34,7 +34,7 @@ const SendNoti = () => {
       console.log("Push Registered...");
 
       // Send Push Notification
-      await fetch("https://pwa-poc-backend.vercel.app/subscribe", {
+      await fetch(`${process.env.REACT_APP_URL}/subscribe`, {
         method: "POST",
         body: JSON.stringify({
           subscriptionData: subscription,

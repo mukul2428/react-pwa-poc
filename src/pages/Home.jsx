@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const Home = () => {
   const [insuranceData, setInsuranceData] = useState([]);
@@ -11,27 +12,12 @@ const Home = () => {
     policyDuration: "",
   });
 
-  useEffect(() => {
-    // Load data from cache when component mounts
-    if ("caches" in window) {
-      caches.open("insuranceData").then((cache) => {
-        cache.match("insuranceData").then((response) => {
-          if (response) {
-            response.json().then((data) => {
-              setInsuranceData(data);
-            });
-          }
-        });
-      });
-    }
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewInsurance({ ...newInsurance, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const updatedInsuranceData = [...insuranceData, newInsurance];
     setInsuranceData(updatedInsuranceData);
@@ -44,15 +30,22 @@ const Home = () => {
       policyDuration: "",
     });
 
-    // Update cache with new data
-    if ("caches" in window) {
-      caches.open("insuranceData").then((cache) => {
-        cache.put(
-          "insuranceData",
-          new Response(JSON.stringify(updatedInsuranceData))
-        );
+    await fetch(`${process.env.REACT_APP_URL}/create-policy`, {
+      method: "POST",
+      body: JSON.stringify(newInsurance),
+      headers: {
+        "content-type": "application/json",
+      },
+    })
+      .then((resp) => {
+        resp.json().then((data) => {
+          toast(data?.message);
+          console.log(data);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
   };
 
   return (
@@ -150,35 +143,7 @@ const Home = () => {
           Submit
         </button>
       </form>
-      {insuranceData.length > 0 && (
-        <div className="submitted-data mt-4">
-          <h3>Submitted Insurance Data:</h3>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Policy Holder Name</th>
-                <th>Policy Type</th>
-                <th>Coverage Amount</th>
-                <th>Beneficiary</th>
-                <th>Premium Amount</th>
-                <th>Policy Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              {insuranceData.map((insurance, index) => (
-                <tr key={index}>
-                  <td>{insurance.policyHolderName}</td>
-                  <td>{insurance.policyType}</td>
-                  <td>{insurance.coverageAmount}</td>
-                  <td>{insurance.beneficiary}</td>
-                  <td>{insurance.premiumAmount}</td>
-                  <td>{insurance.policyDuration}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <Toaster />
     </div>
   );
 };
