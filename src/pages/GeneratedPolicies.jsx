@@ -32,8 +32,8 @@ const GeneratedPolicies = () => {
           </tr>
         </thead>
         <tbody>
-          {policies.map((item) => (
-            <tr>
+          {policies.map((item, i) => (
+            <tr key={i}>
               <td>{item.policyHolderName}</td>
               <td>{item.policyType}</td>
               <td>{item.coverageAmount}</td>
