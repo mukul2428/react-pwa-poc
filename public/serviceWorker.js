@@ -7,7 +7,10 @@ const cacheName = [
   "/bootstrap.min.css",
   "/index.html",
   "/",
+  "/captureDocuments",
+  "/notification",
   "/generatedPolicies",
+  "/fallback.html"
 ];
 
 this.addEventListener("install", (event) => {
@@ -33,6 +36,7 @@ this.addEventListener("push", (e) => {
 });
 
 let notificationSent = false;
+
 this.addEventListener("fetch", (event) => {
   if (!navigator.onLine && notificationSent === false) {
     notificationSent = true;
@@ -52,20 +56,34 @@ this.addEventListener("fetch", (event) => {
     notificationSent = false;
   }
   event.respondWith(
-    (async () => {
-      const r = await caches.match(event.request);
-      console.log(`[Service Worker] Fetching resource: ${event.request.url}`);
-      console.log(r);
-      if (r) {
-        return r;
-      }
-      const response = await fetch(event.request);
-      const cache = await caches.open(cacheData);
-      console.log(
-        `[Service Worker] Caching new resource: ${event.request.url}`
-      );
-      cache.put(event.request, response.clone());
-      return response;
-    })()
+    fetch(event.request)
+      .then((response) => {
+        // If the fetch was successful, clone the response and cache it
+        const responseClone = response.clone();
+        caches.open(cacheData).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // If the fetch fails (due to being offline), try to serve the response from cache
+        return caches.match(event.request).then((response) => {
+          // If response is found in cache, return it
+          if (response) {
+            return response;
+          } else if (
+            event.request.headers.get("accept").includes("text/html")
+          ) {
+            // If response is not found in cache and it's a navigation request, return the fallback page
+            return caches.match("/fallback.html");
+          } else {
+            // If response is not found in cache, return a fallback response
+            return new Response("Offline", {
+              status: 503,
+              statusText: "Service Unavailable",
+            });
+          }
+        });
+      })
   );
 });
