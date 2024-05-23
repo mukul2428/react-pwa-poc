@@ -25,6 +25,7 @@ const SendNoti = () => {
     setLoading(true);
     try {
       const registration = await swDev();
+      console.log(registration);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(

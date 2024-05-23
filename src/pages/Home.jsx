@@ -11,6 +11,7 @@ const Home = () => {
     premiumAmount: "",
     policyDuration: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +20,7 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const updatedInsuranceData = [...insuranceData, newInsurance];
     setInsuranceData(updatedInsuranceData);
     setNewInsurance({
@@ -41,10 +43,13 @@ const Home = () => {
         resp.json().then((data) => {
           toast(data?.message);
           console.log(data);
+          setLoading(false);
         });
       })
       .catch((err) => {
         console.log(err);
+        toast("Request will be retried once the network is back.");
+        setLoading(false);
       });
   };
 
@@ -139,8 +144,16 @@ const Home = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Submit
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? (
+            <span
+              className="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+          ) : (
+            "Submit"
+          )}
         </button>
       </form>
       <Toaster />
