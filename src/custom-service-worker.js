@@ -7,6 +7,7 @@ import { BackgroundSyncPlugin, Queue } from "workbox-background-sync";
 import { setCacheNameDetails } from "workbox-core";
 import { clientsClaim } from "workbox-core";
 import { createHandlerBoundToURL } from "workbox-precaching";
+import { v4 as uuidv4 } from 'uuid';
 
 clientsClaim();
 self.skipWaiting();
@@ -104,7 +105,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   //background sync
-  const queue = new Queue("myQueueName");
+  const queue = new Queue(`backApiSync-${uuidv4()}`);
   // Add in your own criteria here to return early if this
   // isn't a request that should use background sync.
   if (event.request.method !== "POST") {
