@@ -13,35 +13,46 @@ import GeneratedPolicies from "./pages/GeneratedPolicies";
 function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [notificationSupported, setNotificationSupported] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Check if notifications are allowed
-    if (Notification.permission === "default" && !isRunningAsPWA()) {
-      setShowPopup(true);
-    }
-    if (isRunningAsPWA()) {
-      Notification.requestPermission().then((result) => {
-        if (result === "granted") {
-          // Notifications allowed
-        } else if (result === "denied") {
-          // Notifications blocked
-        }
-        setShowPopup(false);
-      });
+    // Check for iOS
+    const userAgent = window.navigator.userAgent;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    setIsIOS(isIOSDevice);
+
+    if ("Notification" in window) {
+      setNotificationSupported(true);
+      if (Notification.permission === "default" && !isRunningAsPWA()) {
+        setShowPopup(true);
+      }
+      if (isRunningAsPWA()) {
+        Notification.requestPermission().then((result) => {
+          if (result === "granted") {
+            // Notifications allowed
+          } else if (result === "denied") {
+            // Notifications blocked
+          }
+          setShowPopup(false);
+        });
+      }
     }
   }, []);
 
   const handlePermissionRequest = () => {
-    Notification.requestPermission().then((result) => {
-      if (result === "granted") {
-        // Notifications allowed, do nothing
-        setShowPopup(false);
-      } else if (result === "denied") {
-        // Notifications blocked
-        alert("Notifications blocked.");
-        setShowPopup(false);
-      }
-    });
+    if (notificationSupported) {
+      Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+          // Notifications allowed, do nothing
+          setShowPopup(false);
+        } else if (result === "denied") {
+          // Notifications blocked
+          alert("Notifications blocked.");
+          setShowPopup(false);
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -92,15 +103,33 @@ function App() {
                 Capture Documents
               </Nav.Link>
               <Nav.Link as={Link} to="/generatedPolicies">
-               Generated Policies
+                Generated Policies
               </Nav.Link>
               <Nav.Link as={Link} to="/notification">
                 Notification
               </Nav.Link>
             </Nav>
-            {!isRunningAsPWA() && (
+            {!isRunningAsPWA() && !isIOS && (
               <button
                 onClick={handleInstallClick}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  transition: "background-color 0.3s ease",
+                  marginRight: "15px",
+                }}
+              >
+                Install App
+              </button>
+            )}
+            {!isRunningAsPWA() && isIOS && (
+              <button
+                onClick={() => setShowPopup(true)}
                 style={{
                   padding: "10px 20px",
                   backgroundColor: "#007bff",
@@ -127,24 +156,42 @@ function App() {
       </Routes>
       <Modal show={showPopup} onHide={() => setShowPopup(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Notification Permission</Modal.Title>
+          <Modal.Title>
+            {isIOS ? "Install App on iOS" : "Notification Permission"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>We'd like to send you notifications. Is that okay?</p>
+          {isIOS ? (
+            <p>
+              To install this app, tap the "Share" icon and select "Add to Home
+              Screen".
+            </p>
+          ) : (
+            <p>We'd like to send you notifications. Is that okay?</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => handlePermissionRequest("denied")}
-          >
-            Block
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => handlePermissionRequest("granted")}
-          >
-            Allow
-          </Button>
+          {!isIOS && (
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => handlePermissionRequest("denied")}
+              >
+                Block
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => handlePermissionRequest("granted")}
+              >
+                Allow
+              </Button>
+            </>
+          )}
+          {isIOS && (
+            <Button variant="primary" onClick={() => setShowPopup(false)}>
+              Close
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </>
