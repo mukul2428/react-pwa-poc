@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
-import swDev from "../swDev";
 import toast, { Toaster } from "react-hot-toast";
 
 const SendNoti = () => {
@@ -9,8 +8,7 @@ const SendNoti = () => {
   const urlBase64ToUint8Array = (base64String) => {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
-      // eslint-disable-next-line no-useless-escape
-      .replace(/\-/g, "+")
+      .replace(/-/g, "+")
       .replace(/_/g, "/");
 
     const rawData = window.atob(base64);
@@ -25,8 +23,10 @@ const SendNoti = () => {
   const handleSendNotification = async () => {
     setLoading(true);
     try {
-      const registration = await swDev();
-      console.log(registration);
+      const registration = await navigator.serviceWorker.ready;
+      if (!registration) {
+        throw new Error("Service worker not ready");
+      }
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
@@ -35,7 +35,6 @@ const SendNoti = () => {
       });
       console.log("Push Registered...");
 
-      // Send Push Notification
       await fetch(`${process.env.REACT_APP_URL}/subscribe`, {
         method: "POST",
         body: JSON.stringify({
@@ -50,7 +49,6 @@ const SendNoti = () => {
         },
       });
       console.log("Notification sent successfully.");
-      setLoading(false);
     } catch (error) {
       console.error(
         "Error registering service worker or subscribing to push:",

@@ -7,7 +7,7 @@ export default function registerServiceWorker() {
 
     wb.addEventListener("installed", (event) => {
       if (event.isUpdate) {
-        if (confirm(`New app update is available!. Click OK to refresh`)) {
+        if (confirm("New app update is available!. Click OK to refresh")) {
           window.location.reload();
         }
       }
@@ -29,8 +29,7 @@ export default function registerServiceWorker() {
       console.error("Service worker redundant:", event);
     });
 
-    return wb
-      .register()
+    wb.register()
       .then((registration) => {
         console.log("Service worker registered:", registration);
         return registration;
@@ -40,6 +39,5 @@ export default function registerServiceWorker() {
       });
   } else {
     console.warn("Service workers are not supported in this browser.");
-    return Promise.resolve(undefined);
   }
 }
