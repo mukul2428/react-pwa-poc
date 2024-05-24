@@ -24,6 +24,7 @@ const SendNoti = () => {
     setLoading(true);
     try {
       const registration = await navigator.serviceWorker.ready;
+      console.log(registration);
       if (!registration) {
         throw new Error("Service worker not ready");
       }
