@@ -72,7 +72,7 @@ self.addEventListener("push", (e) => {
     body: data.body,
     vibrate: [100, 50, 100],
     icon: "logo192.png",
-    badge: "logo192.png",
+    badge: "badge192.png",
     data: { primaryKey: 1 },
     actions: [
       { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
@@ -92,7 +92,7 @@ self.addEventListener("fetch", (event) => {
         vibrate: [100, 50, 100],
         data: { primaryKey: 1 },
         icon: "logo192.png",
-        badge: "logo192.png",
+        badge: "badge192.png",
         actions: [
           { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
           { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import swDev from "../swDev";
+import toast, { Toaster } from "react-hot-toast";
 
 const SendNoti = () => {
   const [loading, setLoading] = useState(false);
@@ -55,6 +56,7 @@ const SendNoti = () => {
         "Error registering service worker or subscribing to push:",
         error
       );
+      toast("Request will be retried once the network is back.");
     } finally {
       setLoading(false);
     }
@@ -69,6 +71,7 @@ const SendNoti = () => {
       >
         {loading ? "Sending Notification..." : "Send Notification"}
       </Button>
+      <Toaster />
     </div>
   );
 };
