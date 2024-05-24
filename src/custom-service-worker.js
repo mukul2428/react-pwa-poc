@@ -65,10 +65,9 @@ registerRoute(
 );
 
 // Push notifications
-self.addEventListener("push", (e) => {
-  const data = e.data.json();
-  console.log(data);
-  self.registration.showNotification(data.title, {
+self.addEventListener('push', function(event) {
+  const data = event.data.json();
+  const options = {
     body: data.body,
     vibrate: [100, 50, 100],
     icon: "logo192.png",
@@ -78,7 +77,10 @@ self.addEventListener("push", (e) => {
       { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
       { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
     ],
-  });
+  };
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
 });
 
 let notificationSent = false;
