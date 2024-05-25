@@ -24,14 +24,16 @@ const SendNoti = () => {
     setLoading(true);
     try {
       const registration = await navigator.serviceWorker.ready;
-      console.log(registration);
       if (!registration) {
         throw new Error("Service worker not ready");
+      }
+      if (!registration.pushManager) {
+        throw new Error("PushManager not supported in this browser");
       }
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
-          process.env.REACT_APP_VAPID_PRIVATE_KEY
+          process.env.REACT_APP_VAPID_PUBLIC_KEY
         ),
       });
       console.log("Push Registered...");

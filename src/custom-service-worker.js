@@ -2,12 +2,12 @@
 /* eslint-env serviceworker */
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { registerRoute, NavigationRoute } from "workbox-routing";
-import { CacheFirst, NetworkFirst } from "workbox-strategies";
-import { BackgroundSyncPlugin, Queue } from "workbox-background-sync";
+import { CacheFirst, NetworkFirst, NetworkOnly } from "workbox-strategies";
+import { BackgroundSyncPlugin } from "workbox-background-sync";
 import { setCacheNameDetails } from "workbox-core";
 import { clientsClaim } from "workbox-core";
 import { createHandlerBoundToURL } from "workbox-precaching";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 clientsClaim();
 self.skipWaiting();
@@ -106,24 +106,37 @@ self.addEventListener("fetch", (event) => {
     notificationSent = false;
   }
 
-  //background sync
-  const queue = new Queue(`backApiSync-${uuidv4()}`);
-  // Add in your own criteria here to return early if this
-  // isn't a request that should use background sync.
-  if (event.request.method !== "POST") {
-    return;
-  }
-  const bgSyncLogic = async () => {
-    try {
-      const response = await fetch(event.request.clone());
-      return response;
-    } catch (error) {
-      await queue.pushRequest({ request: event.request });
-      return error;
-    }
-  };
-  event.respondWith(bgSyncLogic());
+  // //background sync
+  // const queue = new Queue(`backApiSync-${uuidv4()}`);
+  // // Add in your own criteria here to return early if this
+  // // isn't a request that should use background sync.
+  // if (event.request.method !== "POST") {
+  //   return;
+  // }
+  // const bgSyncLogic = async () => {
+  //   try {
+  //     const response = await fetch(event.request.clone());
+  //     return response;
+  //   } catch (error) {
+  //     await queue.pushRequest({ request: event.request });
+  //     return error;
+  //   }
+  // };
+  // event.respondWith(bgSyncLogic());
 });
+
+
+const bgSyncPlugin = new BackgroundSyncPlugin('myQueueName', {
+  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
+});
+
+registerRoute(
+  /\/api\/.*\/*.json/,
+  new NetworkOnly({
+    plugins: [bgSyncPlugin],
+  }),
+  'POST'
+);
 
 // Notification click event
 self.addEventListener("notificationclick", (event) => {
