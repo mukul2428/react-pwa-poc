@@ -1,13 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import {
-  Form,
-  Button,
-  Container,
-  Row,
-  Col,
-  Card,
-} from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -21,16 +14,20 @@ function Signup() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_URL}/signup`, {
         email,
-        password
+        password,
       });
-      if (response.data.data.token) {
-        toast(response.data.data.message);
-        localStorage.setItem('token', response.data.token);
-        navigate('/');
+      if (response?.data?.token) {
+        toast(response?.data?.message);
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
         window.location.reload();
       }
     } catch (error) {
-      toast(error.response.data.message);
+      if (!navigator.onLine) {
+        toast('Internet Not Available');
+        return;
+      }
+      toast(error?.response?.data?.message);
     }
   };
 

@@ -2,12 +2,12 @@
 /* eslint-env serviceworker */
 import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 import { registerRoute, NavigationRoute } from "workbox-routing";
-import { CacheFirst, NetworkFirst, NetworkOnly } from "workbox-strategies";
-import { BackgroundSyncPlugin } from "workbox-background-sync";
+import { CacheFirst, NetworkFirst } from "workbox-strategies";
+import { BackgroundSyncPlugin, Queue } from "workbox-background-sync";
 import { setCacheNameDetails } from "workbox-core";
 import { clientsClaim } from "workbox-core";
 import { createHandlerBoundToURL } from "workbox-precaching";
-// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 clientsClaim();
 self.skipWaiting();
@@ -65,7 +65,7 @@ registerRoute(
 );
 
 // Push notifications
-self.addEventListener('push', function(event) {
+self.addEventListener("push", function (event) {
   const data = event.data.json();
   const options = {
     body: data.body,
@@ -78,9 +78,7 @@ self.addEventListener('push', function(event) {
       { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
     ],
   };
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 let notificationSent = false;
@@ -106,37 +104,42 @@ self.addEventListener("fetch", (event) => {
     notificationSent = false;
   }
 
-  // //background sync
-  // const queue = new Queue(`backApiSync-${uuidv4()}`);
-  // // Add in your own criteria here to return early if this
-  // // isn't a request that should use background sync.
-  // if (event.request.method !== "POST") {
-  //   return;
-  // }
-  // const bgSyncLogic = async () => {
-  //   try {
-  //     const response = await fetch(event.request.clone());
-  //     return response;
-  //   } catch (error) {
-  //     await queue.pushRequest({ request: event.request });
-  //     return error;
-  //   }
-  // };
-  // event.respondWith(bgSyncLogic());
+  //background sync
+  let queue = "";
+  if (!navigator.onLine) {
+    // Add in your own criteria here to return early if this
+    // isn't a request that should use background sync.
+    if (event.request.method !== "POST") {
+      return;
+    }
+    if (!event.request.url.includes("/create-policy")) {
+      return;
+    }
+    queue = new Queue(`backApiSync-${uuidv4()}`);
+  }
+  const bgSyncLogic = async () => {
+    try {
+      const response = await fetch(event.request.clone());
+      return response;
+    } catch (error) {
+      await queue.pushRequest({ request: event.request });
+      return error;
+    }
+  };
+  event.respondWith(bgSyncLogic());
 });
 
+// const bgSyncPlugin = new BackgroundSyncPlugin('myQueueName', {
+//   maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
+// });
 
-const bgSyncPlugin = new BackgroundSyncPlugin('myQueueName', {
-  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
-});
-
-registerRoute(
-  /\/api\/.*\/*.json/,
-  new NetworkOnly({
-    plugins: [bgSyncPlugin],
-  }),
-  'POST'
-);
+// registerRoute(
+//   /\/api\/.*\/*.json/,
+//   new NetworkOnly({
+//     plugins: [bgSyncPlugin],
+//   }),
+//   'POST'
+// );
 
 // Notification click event
 self.addEventListener("notificationclick", (event) => {
