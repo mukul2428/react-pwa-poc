@@ -57,7 +57,11 @@ const SendNoti = () => {
         "Error registering service worker or subscribing to push:",
         error
       );
-      toast("Request will be retried once the network is back.");
+      if (!navigator.onLine) {
+        toast("Internet Not Available");
+        return;
+      }
+      toast("Something went wrong");
     } finally {
       setLoading(false);
     }
