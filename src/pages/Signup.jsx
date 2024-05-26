@@ -1,16 +1,26 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(`${process.env.REACT_APP_URL}/signup`, {
         email,
@@ -24,10 +34,12 @@ function Signup() {
       }
     } catch (error) {
       if (!navigator.onLine) {
-        toast('Internet Not Available');
+        toast("Internet Not Available");
         return;
       }
       toast(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,6 +61,7 @@ function Signup() {
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                   />
                 </Form.Group>
                 <Form.Group controlId="formPassword">
@@ -58,10 +71,26 @@ function Signup() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mt-3">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100 mt-3"
+                  disabled={loading}
+                >
                   Signup
+                  {loading && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="ms-2"
+                    />
+                  )}
                 </Button>
               </Form>
             </Card.Body>

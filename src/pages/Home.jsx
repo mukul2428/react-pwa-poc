@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 
 const Home = () => {
@@ -42,7 +43,6 @@ const Home = () => {
       .then((resp) => {
         resp.json().then((data) => {
           toast(data?.message);
-          console.log(data);
           setLoading(false);
         });
       })
@@ -72,6 +72,7 @@ const Home = () => {
             value={newInsurance.policyHolderName}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
         <div className="mb-3">
@@ -86,6 +87,7 @@ const Home = () => {
             value={newInsurance.policyType}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
         <div className="mb-3">
@@ -100,6 +102,7 @@ const Home = () => {
             value={newInsurance.coverageAmount}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
         <div className="mb-3">
@@ -114,6 +117,7 @@ const Home = () => {
             value={newInsurance.beneficiary}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
         <div className="mb-3">
@@ -128,6 +132,7 @@ const Home = () => {
             value={newInsurance.premiumAmount}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
         <div className="mb-3">
@@ -142,19 +147,28 @@ const Home = () => {
             value={newInsurance.policyDuration}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? (
-            <span
-              className="spinner-border spinner-border-sm"
+
+        <Button
+          variant="primary"
+          type="submit"
+          className="w-100 mt-3 mb-4"
+          disabled={loading}
+        >
+          Submit
+          {loading && (
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
               role="status"
               aria-hidden="true"
-            ></span>
-          ) : (
-            "Submit"
+              className="ms-2"
+            />
           )}
-        </button>
+        </Button>
       </form>
       <Toaster />
     </div>

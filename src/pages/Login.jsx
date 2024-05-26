@@ -1,6 +1,14 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getCredentials, saveCredentials } from "../utils";
@@ -8,10 +16,12 @@ import { getCredentials, saveCredentials } from "../utils";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(`${process.env.REACT_APP_URL}/login`, {
         email,
@@ -30,6 +40,8 @@ function Login() {
       } else {
         toast(error?.response?.data?.message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +78,7 @@ function Login() {
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                   />
                 </Form.Group>
                 <Form.Group controlId="formPassword">
@@ -75,10 +88,26 @@ function Login() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mt-3">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100 mt-3"
+                  disabled={loading}
+                >
                   Login
+                  {loading && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="ms-2"
+                    />
+                  )}
                 </Button>
               </Form>
             </Card.Body>
