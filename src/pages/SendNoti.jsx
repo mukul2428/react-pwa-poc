@@ -93,9 +93,29 @@ const SendNoti = () => {
     }
   };
 
+  const permissionCheck = () => {
+    if (Notification.permission === "granted") {
+      toast("Notifications are already allowed.");
+    } else if (Notification.permission === "denied") {
+      alert("Notifications are blocked.");
+    } else {
+      Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+          toast("Notifications allowed.");
+        } else if (result === "denied") {
+          alert("Notifications blocked.");
+        }
+      });
+    }
+  };
+
   return (
     <div className="d-flex justify-content-center mt-4">
+      <Button variant="primary" onClick={permissionCheck} disabled={loading}>
+        Permission Check
+      </Button>
       <Button
+        className="ms-3"
         variant="primary"
         onClick={handleSendNotification}
         disabled={loading}
