@@ -56,7 +56,7 @@ const SendNoti = () => {
               process.env.REACT_APP_VAPID_PUBLIC_KEY
             ),
           });
-          console.log("Push Registered...");
+          toast("Push Registered...");
 
           await fetch(`${process.env.REACT_APP_URL}/subscribe`, {
             method: "POST",
@@ -71,7 +71,7 @@ const SendNoti = () => {
               "content-type": "application/json",
             },
           });
-          console.log("Notification sent successfully.");
+          toast("Notification sent successfully.");
         } catch (error) {
           console.error(
             "Error registering service worker or subscribing to push:",

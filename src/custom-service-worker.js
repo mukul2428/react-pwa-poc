@@ -65,20 +65,37 @@ registerRoute(
 );
 
 // Push notifications
-self.addEventListener("push", function (event) {
+// self.addEventListener("push", (event) => {
+//   const data = event.data.json();
+//   const options = {
+//     body: data.body,
+//     vibrate: [100, 50, 100],
+//     icon: "logo192.png",
+//     badge: "badge192.png",
+//     data: { primaryKey: 1 },
+//     actions: [
+//       { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+//       { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+//     ],
+//   };
+//   event.waitUntil(self.registration.showNotification(data.title, options));
+// });
+
+self.addEventListener("push", (event) => {
   const data = event.data.json();
-  const options = {
-    body: data.body,
-    vibrate: [100, 50, 100],
-    icon: "logo192.png",
-    badge: "badge192.png",
-    data: { primaryKey: 1 },
-    actions: [
-      { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
-      { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
-    ],
-  };
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      vibrate: [100, 50, 100],
+      icon: "logo192.png",
+      badge: "badge192.png",
+      data: { primaryKey: 1 },
+      actions: [
+        { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+        { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+      ],
+    })
+  );
 });
 
 let notificationSent = false;
