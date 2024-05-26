@@ -5,28 +5,32 @@ export default function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     const wb = new Workbox("/service-worker.js");
 
-    wb.addEventListener("installed", (event) => {
+    wb.addEventListener("installed", async (event) => {
       if (event.isUpdate) {
-        if (confirm("New app update is available!. Click OK to refresh")) {
+        if (confirm("New app update is available! Click OK to refresh.")) {
+          // Unregister all service workers
+          const registrations =
+            await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            registration.unregister();
+          }
+
+          // Clear all caches
+          if (window.caches) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map((cache) => caches.delete(cache)));
+          }
+
+          // Clear all IndexedDB databases
+          const databases = await indexedDB.databases();
+          for (let dbInfo of databases) {
+            indexedDB.deleteDatabase(dbInfo.name);
+          }
+
+          // Reload the page to apply the new service worker and updates
           window.location.reload();
         }
       }
-    });
-
-    wb.addEventListener("activated", (event) => {
-      console.log("Service worker activated:", event);
-    });
-
-    wb.addEventListener("waiting", (event) => {
-      console.log("Service worker waiting:", event);
-    });
-
-    wb.addEventListener("controlling", (event) => {
-      console.log("Service worker controlling:", event);
-    });
-
-    wb.addEventListener("redundant", (event) => {
-      console.error("Service worker redundant:", event);
     });
 
     wb.register()
