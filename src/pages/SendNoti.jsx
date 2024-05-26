@@ -20,46 +20,36 @@ const SendNoti = () => {
     return outputArray;
   };
 
-  const isIOS = () => {
-    const userAgent = window.navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(userAgent);
-    const iOSVersion =
-      parseFloat(
-        (
-          "" +
-          (/CPU.*OS ([0-9_]{1,5})|(CPU like).*AppleWebKit.*Mobile/i.exec(
-            userAgent
-          ) || [0, ""])[1]
-        )
-          .replace("undefined", "3_2")
-          .replace("_", ".")
-          .replace("_", "")
-      ) || false;
+  // const isIOS = () => {
+  //   const userAgent = window.navigator.userAgent;
+  //   const iOS = /iPad|iPhone|iPod/.test(userAgent);
+  //   const iOSVersion =
+  //     parseFloat(
+  //       (
+  //         "" +
+  //         (/CPU.*OS ([0-9_]{1,5})|(CPU like).*AppleWebKit.*Mobile/i.exec(
+  //           userAgent
+  //         ) || [0, ""])[1]
+  //       )
+  //         .replace("undefined", "3_2")
+  //         .replace("_", ".")
+  //         .replace("_", "")
+  //     ) || false;
 
-    return iOS && iOSVersion >= 16.4;
-  };
+  //   return iOS && iOSVersion >= 16.4;
+  // };
 
   const handleSendNotification = async () => {
-    if (isIOS() || ("Notification" in window && "serviceWorker" in navigator)) {
+    if ("Notification" in window && "serviceWorker" in navigator) {
       const result = await Notification.requestPermission();
       if (result === "granted") {
-        if (!("serviceWorker" in navigator)) {
-          toast("Service workers are not supported in this browser.");
-          return;
-        }
-
-        if (!("PushManager" in window)) {
-          toast("Push notifications are not supported on this device.");
-          return;
-        }
-
-        setLoading(true);
         try {
           const registration = await navigator.serviceWorker.ready;
+          console.log(registration);
           if (!registration.pushManager) {
             throw new Error("PushManager not supported in this browser");
           }
-
+          setLoading(true);
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(
