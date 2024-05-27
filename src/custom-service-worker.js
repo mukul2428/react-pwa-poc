@@ -65,23 +65,19 @@ registerRoute(
 );
 
 self.addEventListener("push", (event) => {
-  console.log("Push event received:", event);
-  const apiData = event.data ? event.data.json() : {};
-  console.log("Push data:", apiData);
-
-  const options = {
-    body: "test one",
-    vibrate: [100, 50, 100],
-    icon: "logo192.png",
-    badge: "badge192.png",
-    data: { primaryKey: 1 },
-    actions: [
-      { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
-      { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
-    ],
-  };
+  const data = event.data.json();
   event.waitUntil(
-    self.registration.showNotification("Test Title One", options)
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      vibrate: [100, 50, 100],
+      icon: "logo192.png",
+      badge: "badge192.png",
+      data: { primaryKey: 1 },
+      actions: [
+        { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+        { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+      ],
+    })
   );
 });
 
