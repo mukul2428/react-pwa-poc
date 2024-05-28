@@ -35,11 +35,26 @@ export default function registerServiceWorker() {
 
     wb.register()
       .then((registration) => {
-        console.log("Service worker registered:", registration);
-        return registration;
+        console.log("Custom service worker registered:", registration);
       })
       .catch((error) => {
-        console.error("Service worker registration failed:", error);
+        console.error("Custom service worker registration failed:", error);
+      });
+
+    // Register the Firebase messaging service worker
+    navigator.serviceWorker
+      .register("/firebase-messaging-sw.js")
+      .then((registration) => {
+        console.log(
+          "Firebase messaging service worker registered:",
+          registration
+        );
+      })
+      .catch((error) => {
+        console.error(
+          "Firebase messaging service worker registration failed:",
+          error
+        );
       });
   } else {
     console.warn("Service workers are not supported in this browser.");

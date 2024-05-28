@@ -42,13 +42,13 @@ const Home = () => {
     })
       .then((resp) => {
         resp.json().then((data) => {
-          toast(data?.message);
+          toast.success(data?.message);
           setLoading(false);
         });
       })
       .catch((err) => {
         console.log(err);
-        toast("Request will be retried once the network is back.");
+        toast.error("Request will be retried once the network is back.");
         setLoading(false);
       });
   };

@@ -27,17 +27,17 @@ function Signup() {
         password,
       });
       if (response?.data?.token) {
-        toast(response?.data?.message);
+        toast.success(response?.data?.message);
         localStorage.setItem("token", response.data.token);
         navigate("/");
         window.location.reload();
       }
     } catch (error) {
       if (!navigator.onLine) {
-        toast("Internet Not Available");
+        toast.error("Internet Not Available");
         return;
       }
-      toast(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }

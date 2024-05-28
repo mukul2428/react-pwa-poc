@@ -28,7 +28,7 @@ function Login() {
         password,
       });
       if (response?.data?.token) {
-        toast(response?.data?.message);
+        toast.success(response?.data?.message);
         localStorage.setItem("token", response.data.token);
         await saveCredentials(email, password);
         navigate("/");
@@ -38,7 +38,7 @@ function Login() {
       if (!navigator.onLine) {
         offlineLogin();
       } else {
-        toast(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
       }
     } finally {
       setLoading(false);
@@ -50,12 +50,12 @@ function Login() {
     if (credentials) {
       // Use the decrypted credentials to log in
       if (credentials.email === email && credentials.password === password) {
-        toast("Login Success");
+        toast.success("Login Success");
         localStorage.setItem("token", "offline");
         navigate("/");
         window.location.reload();
       } else {
-        toast("Invalid Credentials");
+        toast.error("Invalid Credentials");
       }
     }
   }

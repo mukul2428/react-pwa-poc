@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import toast, { Toaster } from "react-hot-toast";
+import { messaging } from "../firebase-config";
+import { getToken } from "firebase/messaging";
 
 const SendNoti = () => {
   const [loading, setLoading] = useState(false);
+  const [iosLoading, setIosLoading] = useState(false);
 
   const urlBase64ToUint8Array = (base64String) => {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -56,7 +59,6 @@ const SendNoti = () => {
               process.env.REACT_APP_VAPID_PUBLIC_KEY
             ),
           });
-          toast("Push Registered...");
 
           await fetch(`${process.env.REACT_APP_URL}/subscribe`, {
             method: "POST",
@@ -71,48 +73,84 @@ const SendNoti = () => {
               "content-type": "application/json",
             },
           });
-          toast("Notification sent successfully.");
         } catch (error) {
           console.error(
             "Error registering service worker or subscribing to push:",
             error
           );
           if (!navigator.onLine) {
-            toast("Internet Not Available");
+            toast.error("Internet Not Available");
             return;
           }
-          toast("Something went wrong");
+          toast.error("Something went wrong");
         } finally {
           setLoading(false);
         }
       } else if (result === "denied") {
-        toast("Cannot Send Notification");
+        toast.error("Cannot Send Notification");
       }
     } else {
-      toast("Notifications not supported in this browser.");
+      toast.error("Notifications not supported in this browser.");
     }
   };
 
-  const permissionCheck = () => {
-    if (Notification.permission === "granted") {
-      toast("Notifications are already allowed.");
-    } else if (Notification.permission === "denied") {
-      alert("Notifications are blocked.");
-    } else {
-      Notification.requestPermission().then((result) => {
-        if (result === "granted") {
-          toast("Notifications allowed.");
-        } else if (result === "denied") {
-          alert("Notifications blocked.");
+  const iosHandleSendNotification = async () => {
+    if ("Notification" in window && "serviceWorker" in navigator) {
+      const result = await Notification.requestPermission();
+      if (result === "granted") {
+        try {
+          setIosLoading(true);
+
+          // Wait for the service worker to be ready
+          const registration = await navigator.serviceWorker.ready;
+
+          const currentToken = await getToken(messaging, {
+            vapidKey: process.env.REACT_APP_FIREBASE_KEY,
+            serviceWorkerRegistration: registration,
+          });
+
+          if (currentToken) {
+            console.log("Device token:", currentToken);
+            // Send the token to your server
+            await fetch(`${process.env.REACT_APP_URL}/send-notification`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                title: "Test Notification",
+                body: "This is a test notification",
+                token: currentToken,
+              }),
+            });
+            toast.success("Notification sent successfully!");
+          } else {
+            console.log(
+              "No registration token available. Request permission to generate one."
+            );
+          }
+        } catch (error) {
+          console.error("Error during notification setup:", error);
+          toast.error("Something went wrong");
+        } finally {
+          setIosLoading(false);
         }
-      });
+      } else {
+        toast.error("Notification permission denied");
+      }
+    } else {
+      toast.error("Notifications not supported in this browser");
     }
   };
 
   return (
     <div className="d-flex justify-content-center mt-4">
-      <Button variant="primary" onClick={permissionCheck} disabled={loading}>
-        Permission Check
+      <Button
+        variant="primary"
+        onClick={iosHandleSendNotification}
+        disabled={iosLoading}
+      >
+        {iosLoading ? "IOS Sending Notification..." : "IOS Send Notification"}
       </Button>
       <Button
         className="ms-3"
