@@ -10,7 +10,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCredentials, saveCredentials } from "../utils";
 
 function Login() {
@@ -110,6 +110,9 @@ function Login() {
                   )}
                 </Button>
               </Form>
+              <div className="text-center mt-3">
+                Don't have an account? <Link to="/signup">Sign Up</Link>
+              </div>
             </Card.Body>
           </Card>
         </Col>

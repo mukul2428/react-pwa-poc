@@ -53,12 +53,38 @@ const SendNoti = () => {
             throw new Error("PushManager not supported in this browser");
           }
           setLoading(true);
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
+
+          // Check if a subscription already exists
+          let subscription = await registration.pushManager.getSubscription();
+          if (subscription) {
+            console.log("Existing subscription found:", subscription);
+            // Check if the existing subscription has a different applicationServerKey
+            const existingKey = new Uint8Array(
+              subscription.options.applicationServerKey
+            );
+            const newKey = urlBase64ToUint8Array(
               process.env.REACT_APP_VAPID_PUBLIC_KEY
-            ),
-          });
+            );
+            if (
+              existingKey &&
+              existingKey.length === newKey.length &&
+              existingKey.some((v, i) => v !== newKey[i])
+            ) {
+              console.log("Unsubscribing from existing subscription...");
+              await subscription.unsubscribe();
+              subscription = null;
+            }
+          }
+
+          if (!subscription) {
+            // Subscribe with the new applicationServerKey
+            subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(
+                process.env.REACT_APP_VAPID_PUBLIC_KEY
+              ),
+            });
+          }
 
           await fetch(`${process.env.REACT_APP_URL}/subscribe`, {
             method: "POST",
@@ -73,6 +99,8 @@ const SendNoti = () => {
               "content-type": "application/json",
             },
           });
+
+          toast.success("Notification sent successfully!");
         } catch (error) {
           console.error(
             "Error registering service worker or subscribing to push:",
@@ -103,7 +131,7 @@ const SendNoti = () => {
 
           // Wait for the service worker to be ready
           const registration = await navigator.serviceWorker.ready;
-
+          console.log(registration);
           const currentToken = await getToken(messaging, {
             vapidKey: process.env.REACT_APP_FIREBASE_KEY,
             serviceWorkerRegistration: registration,
@@ -118,8 +146,8 @@ const SendNoti = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                title: "Test Notification",
-                body: "This is a test notification",
+                title: "Hi!! You Called Me from IOS",
+                body: "Do You Want Any Help?",
                 token: currentToken,
               }),
             });

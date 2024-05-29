@@ -66,19 +66,35 @@ registerRoute(
 
 self.addEventListener("push", (event) => {
   const data = event.data.json();
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      vibrate: [100, 50, 100],
-      icon: "logo192.png",
-      badge: "badge192.png",
-      data: { primaryKey: 1 },
-      actions: [
-        { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
-        { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
-      ],
-    })
-  );
+  if (data?.fcmMessageId) {
+    event.waitUntil(
+      self.registration.showNotification(data.notification.title, {
+        body: data.notification.body,
+        vibrate: [100, 50, 100],
+        icon: "logo192.png",
+        badge: "badge192.png",
+        data: { primaryKey: 1 },
+        actions: [
+          { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+          { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+        ],
+      })
+    );
+  } else {
+    event.waitUntil(
+      self.registration.showNotification(data.title, {
+        body: data.body,
+        vibrate: [100, 50, 100],
+        icon: "logo192.png",
+        badge: "badge192.png",
+        data: { primaryKey: 1 },
+        actions: [
+          { action: "go", title: "Go to Site", icon: "tick-icon.jpg" },
+          { action: "close", title: "No Thank You", icon: "cancel-icon.jpg" },
+        ],
+      })
+    );
+  }
 });
 
 let notificationSent = false;
