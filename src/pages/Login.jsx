@@ -28,9 +28,9 @@ function Login() {
         password,
       });
       if (response?.data?.token) {
+        await saveCredentials(email, password);
         toast.success(response?.data?.message);
         localStorage.setItem("token", response.data.token);
-        await saveCredentials(email, password);
         navigate("/");
         window.location.reload();
       }

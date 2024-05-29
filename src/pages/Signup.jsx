@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { saveCredentials } from "../utils";
 
 function Signup() {
   const [email, setEmail] = useState("");
@@ -27,6 +28,7 @@ function Signup() {
         password,
       });
       if (response?.data?.token) {
+        await saveCredentials(email, password);
         toast.success(response?.data?.message);
         localStorage.setItem("token", response.data.token);
         navigate("/");
